@@ -1,0 +1,5 @@
+akhq:
+  connections:
+    wouterscluster:
+      properties:
+        bootstrap.servers: "kafka-zookeeper:9092"

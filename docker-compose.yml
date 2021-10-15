@@ -1,0 +1,65 @@
+version: '3.1'
+
+networks:
+  wmelan:
+    name: wmelan
+
+volumes:
+  es-data:
+
+
+#all on the same network wmelan
+#kafka-zookeeper has an alias on the network: kafkazoo.wme
+#advertised host (of brokers etc) is kafkazoo.wme
+#this app connects to localhost, will get brokers with kafkazoo.wme back, so needs localhost entry in /etc/hosts
+
+services:
+#-----------------------------------------------------
+  kafka-zookeeper:
+    image: johnnypark/kafka-zookeeper
+    container_name: kafka-zookeeper
+    ports:
+      - "2181:2181"
+      - "9092:9092"
+    environment:
+      - ADVERTISED_HOST=kafkazoo.wme
+    networks:
+      wmelan:
+        aliases:
+          - kafkazoo.wme
+#-----------------------------------------------------
+  akhq:
+    image: tchiotludo/akhq
+    container_name: akhq
+    ports:
+      - 8080:8080
+    volumes:
+      - ./akhq.yml:/app/application.yml
+    depends_on:
+      - kafka-zookeeper
+    networks:
+        wmelan:
+#-----------------------------------------------------
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+    container_name: elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      - es-data:/es-data
+    environment:
+      - discovery.type=single-node
+    networks:
+      wmelan:
+#-----------------------------------------------------
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.2.0
+    container_name: kibana
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    networks:
+      wmelan:
+#-----------------------------------------------------
