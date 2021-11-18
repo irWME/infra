@@ -41,7 +41,7 @@ services:
         wmelan:
 #-----------------------------------------------------
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
     container_name: elasticsearch
     ports:
       - 9200:9200
@@ -54,7 +54,7 @@ services:
       wmelan:
 #-----------------------------------------------------
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.2.0
+    image: docker.elastic.co/kibana/kibana:7.14.2
     container_name: kibana
     ports:
       - 5601:5601
